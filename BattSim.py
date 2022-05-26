@@ -1,13 +1,29 @@
-# Python script to run `octave demoBatterySimulator.m`, and provide an interface between Python and Octave for battery simulation.
+import subprocess as sp
+from utils import *
 
-# todo: add HTML responses? Perhaps we can use a local server to simulate batteries, so the pi doesn't have to simulate the battery
+octave = sp.Popen(["octave", "octave/batterySimulator.m"],
+                       stdin=sp.PIPE,
+                       stdout=sp.PIPE,
+                       stderr=sp.PIPE,
+                       universal_newlines=True,
+                       bufsize=0)
 
-import subprocess
-process = subprocess.Popen(['octave', 'demoBatterySimulator.m'],
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE,
-                           stdin=subprocess.PIPE,
-                           universal_newlines=True,
-                           bufsize=0)
-stdout, stderr = process.communicate()
-print(stdout)
+# Send octave commands to stdin
+# assert(octave.stdout.read()  == 'coefficients: ')
+
+battery = [
+    -9.082, 103.087, -18.185, 2.062, -0.102, -76.604, 141.199, -1.117
+]
+
+# if octave.stdout.read() != 'coefficients':
+#     raise Exception('coefficients request not received')
+octave.stdin.write(f'{" ".join(map(str,battery))}\n')
+octave.stdin.close()
+
+# Fetch output
+for line in octave.stdout:
+    print('py:', line.strip())
+
+# generate a square wave like in demoBatterySimulator.m
+for v, t in zip(*squareWave(0.5, 10, 100)):
+    print(t, v)
