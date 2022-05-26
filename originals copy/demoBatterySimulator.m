@@ -1,6 +1,4 @@
 
-%clc; close all; clear all;
-
 % dbstop('error')
 
 k0           = -9.082;
@@ -14,7 +12,7 @@ k7           = -1.117;
 
 Kbatt        = [k0; k1; k2; k3; k4; k5; k6; k7];
 
-batt_model   = 3; % (1,2,3,4) battery is set to this model
+batt_model   = 3; % (1,2,3,4) batteyr is set to this model
 
 Batt.Kbatt   = Kbatt;
 Batt.Cbatt   = 1.9;
@@ -36,7 +34,6 @@ Batt.alpha2 = exp(-(delta/(Batt.R2*Batt.C2)));
 
 %current simulation
 [T,I] = CurretSIM('rectangularnew',-Id, Id, delta, Tc, D);
-disp([T I])
 
 %SNR and noise parameters
 SNR     = 50;
@@ -45,16 +42,20 @@ sigma_v = 10^(-SNR/20); % voltage measurement noise
 
 % send current into the batery simulater
 [Vbatt,Ibatt, ~, Vo] = battSIM(I, T, Batt, sigma_i, sigma_v, delta);
-% disp([Vbatt,Ibatt, Vo])
-%current plotting
-% hI=figure; hold on; grid on; box on
-% subplot(211); box on; grid on
-% plot(T, Ibatt, 'linewidth', 2);
-% xlabel('Time (sec)') ; ylabel('Current (mA)')
-% grid on
-% subplot(212); box on; grid on
-% plot(T, Vbatt, 'linewidth', 2);
-% grid on
-% xlabel('Time (sec)') ; ylabel('Voltage (V)')
 
-disp('done')
+%current plotting
+hI=figure; hold on; grid on; box on
+subplot(211); box on; grid on
+plot(T, Ibatt, 'linewidth', 2);
+xlabel('Time (sec)') ; ylabel('Current (mA)')
+grid on
+subplot(212); box on; grid on
+plot(T, Vbatt, 'linewidth', 2);
+grid on
+xlabel('Time (sec)') ; ylabel('Voltage (V)')
+
+
+
+
+
+
