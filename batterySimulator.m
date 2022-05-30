@@ -23,6 +23,19 @@ Batt.R2 = 0.3;
 Batt.C2 = 500;
 Batt.ModelID = batt_model;
 
+%current simulation parameters
+delta = 100*10^(-3);
+Tc  = 10;  % sampling
+D   = 100; % duration of the simulation
+Id = -500; % amplitude of current (mA)
+
+Batt.alpha1 = exp(-(delta/(Batt.R1*Batt.C1)));
+Batt.alpha2 = exp(-(delta/(Batt.R2*Batt.C2)));
+
+%current simulation
+[T,I] = CurretSIM('rectangularnew',-Id, Id, delta, Tc, D);
+
+
 % From here, parameters and simulation are handled by stdin
 
 while true
@@ -45,6 +58,7 @@ while true
         end
 
         Batt.Kbatt = Kbatt;
+        disp('done');
     end
 
     if strcmp(cmd, 'c')
@@ -59,6 +73,7 @@ while true
         Batt.Cbatt = Cbatt(1);
         Batt.C0 = Cbatt(2);
         Batt.C1 = Cbatt(3);
+        disp('done');
     end
 
     if strcmp(cmd, 'r')
@@ -73,6 +88,7 @@ while true
         Batt.R0 = Rbatt(1);
         Batt.R1 = Rbatt(2);
         Batt.R2 = Rbatt(3);
+        disp('done');
     end
 
     if strcmp(cmd, 'm')
@@ -84,11 +100,27 @@ while true
         end
 
         Batt.ModelID = str2double(Batt.ModelID);
+        disp('done');
     end
 
-    if strcmp(cmd, 's')
-        % simulate battery
+    if strcmp(cmd, 'cs')
+        %  use CurretSIM to generate the simulation profile
 
+        temp = input('', 's');
+        shape = strtrim(temp); % remove the \n at the end
+        temp = input('', 's');
+        Id = sscanf(temp, '%f');
+        temp = input('', 's');
+        Tc = sscanf(temp, '%f');
+        temp = input('', 's');
+        D = sscanf(temp, '%f');
+        [T,I] = CurretSIM(shape, -Id, Id, delta, Tc, D);
+        disp('done');
+
+    end
+
+    if strcmp(cmd, 'ms')
+        %  manually set the simulation profile
         % I is a vector of current values
         I = input('', 's');
         I = sscanf(I, '%f');
@@ -96,6 +128,11 @@ while true
         % T is a vector of time values, corresponding to I
         T = input('', 's');
         T = sscanf(T, '%f');
+    end
+
+
+    if strcmp(cmd, 's')
+        % simulate battery
 
         % signal noise
         SNR = 50;
@@ -106,12 +143,13 @@ while true
 
         [Vbatt, Ibatt, ~, Vo] = battSIM(I, T, Batt, sigma_i, sigma_v, delta);
 
-        disp('battsim done');
-
         % output the results
-        fprintf('%f\n', Vbatt);
-        fprintf('%f\n', Ibatt);
-        fprintf('%f\n', Vo);
+        fprintf('%f ', Vbatt);
+        fprintf('\n');
+        fprintf('%f ', Ibatt);
+        fprintf('\n');
+        fprintf('%f ', Vo);
+        fprintf('\n');
         disp('done');
     end
 
