@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 
 # T, I = staircase()
 # T, I = deepdischarge()
-T, I = rectangular()
+# T, I = rectangular()
+T, I = rectangularnew()
 
 # plot the the current (I) vs time (T)
 plt.plot(T, I)

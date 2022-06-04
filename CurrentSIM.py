@@ -127,6 +127,61 @@ def rectangular(delta=1000, Ns=500, Nb=2, Imag=[-1000, 0]):
     return T, I
 
 
+def rectangularnew(I1=-0.5, I2=0.5, delta=100*10**(-3), Tc=10, D=100):
+    """
+    delta =  Sampling delta time in seconds
+    Tc = Pulse-Width in seconds
+    D = Total time in seconds
+    I1,I2 = current values for wave halves
+    """
+
+    # Ns_pulse = T / delta; % Number of samples in one on-off pulse
+    Ns_pulse = int(Tc / delta)
+    # Np = floor(D / T); % Number of on-off pulses
+    Np = int(D / Tc)
+    # Nsp2 = Ns_pulse / 2; % Number of samples in each half of apulse
+    Nsp2 = int(Ns_pulse / 2)
+    # Nb = 2; % Number of blocks = on + off pulse
+    Nb = 2
+    # Nt = D / delta; % Total number of samples
+    Nt = int(D / delta)
+    # Imag = [I1 I2]; % Current vector
+    Imag = [I1, I2]
+    # T = 0:delta:D; % Time vector
+    T = np.arange(0, D, delta)
+    # T = T(2:end)';
+    # T = T[1:]
+    # I = Imag(1) * ones(length(T), 1);
+    I = Imag[0] * np.ones(Nt)
+    # l = 1;
+    # for k = 1:Nb * Np
+    for k in range(Nb * Np):
+        I[k*Nsp2 : (k+1)*Nsp2] = Imag[k % Nb] * np.ones(Nsp2)
+    #     I((k - 1) * Nsp2 + 1:k * Nsp2) = Imag(l) * ones(Nsp2, 1);
+    #     l = l + 1;
+
+    #     if (l == Nb + 1)
+    #         l = 1;
+    #     end
+
+    # end
+
+    # # if (Np * Ns_pulse ~= Nt)
+    # if (Np * Ns_pulse != Nt):
+    #     print("Warning: Np * Ns_pulse ~= Nt")
+    # #     Q = Nt - Np * Ns_pulse;
+    #     Q = Nt - Np * Ns_pulse
+    # #     I(k * Nsp2 + 1:k * Nsp2 + Q) = I(1:Q);
+    #     I[k * Nsp2:k * Nsp2 + Q] = I[:Q]
+    # # end
+
+    # I = I * 10^ - 3;
+    I = I * 10 ** (-3) # convert to mA
+
+    return T, I
+
+
+
 # My own function that I made earlier
 
 from math import log10
