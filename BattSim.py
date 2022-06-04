@@ -27,22 +27,13 @@ class BattSim:
         self.octave.stdin.write(f'{" ".join(map(str,battery))}\n')
         self.__resp()
 
-    # generate a square wave like in demoBatterySimulator.m
-    def CurretSIM(self, shape: str, amplitude: float, samplingRate: float, duration: float) -> None:
-        self.octave.stdin.write(f'cs\n')
-        self.octave.stdin.write(f'{shape}\n')
-        self.octave.stdin.write(f'{amplitude}\n')
-        self.octave.stdin.write(f'{samplingRate}\n')
-        self.octave.stdin.write(f'{duration}\n')
-        self.__resp()
 
-    def internalCurrentSIM(self, I: list, T: list) -> None:
+    def setCurrentDraw(self, I: list, T: list) -> None:
         # I and T are both lists containing the same number of elements for simulation. These can be developed however you choose
-        self.octave.stdin.write(f'ms\n')
+        self.octave.stdin.write(f'i\n')
         self.octave.stdin.write(f"{' '.join(map(str, I))}\n")
         self.octave.stdin.write(f"{' '.join(map(str, T))}\n")
         self.__resp()
-        
                 
 
     # for line in octave.stderr:
@@ -58,18 +49,23 @@ class BattSim:
             response.append(list(map(float, line.split())))
         return response if len(response) > 1 else response[0]
 
-    def simulate(self) -> tuple:
+    def simulate(self) -> list:
+        """
+        Simulate the battery and return the voltage and current
+        returns:
+        [Vbatt, Ibatt, soc, Vo] as lists of floats
+        """
         self.octave.stdin.write(f's\n')
         return self.__fetchResponse()
 
-    def kill(self) -> None:
+    def kill(self) -> int:
         self.octave.stdin.write(f'quit\n')
-        return self.octave.kill()
+        return self.octave.wait(timeout=1)
 
 
 if __name__ == '__main__':
     battSim = BattSim()
-    Vbatt, Ibatt, Vo = battSim.simulate()
+    Vbatt, Ibatt, soc, Vo = battSim.simulate()
 
     print(f'Vbatt: {Vbatt}')
     print(f'Ibatt: {Ibatt}')

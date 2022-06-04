@@ -103,23 +103,23 @@ while true
         disp('done');
     end
 
-    if strcmp(cmd, 'cs')
-        %  use CurretSIM to generate the simulation profile
+    % if strcmp(cmd, 'cs')
+    %     %  use CurretSIM to generate the simulation profile
 
-        temp = input('', 's');
-        shape = strtrim(temp); % remove the \n at the end
-        temp = input('', 's');
-        Id = sscanf(temp, '%f');
-        temp = input('', 's');
-        Tc = sscanf(temp, '%f');
-        temp = input('', 's');
-        D = sscanf(temp, '%f');
-        [T,I] = CurretSIM(shape, -Id, Id, delta, Tc, D);
-        disp('done');
+    %     temp = input('', 's');
+    %     shape = strtrim(temp); % remove the \n at the end
+    %     temp = input('', 's');
+    %     Id = sscanf(temp, '%f');
+    %     temp = input('', 's');
+    %     Tc = sscanf(temp, '%f');
+    %     temp = input('', 's');
+    %     D = sscanf(temp, '%f');
+    %     [T,I] = CurretSIM(shape, -Id, Id, delta, Tc, D);
+    %     disp('done');
 
-    end
+    % end
 
-    if strcmp(cmd, 'ms')
+    if strcmp(cmd, 'i')
         %  manually set the simulation profile
         % I is a vector of current values
         I = input('', 's');
@@ -128,6 +128,7 @@ while true
         % T is a vector of time values, corresponding to I
         T = input('', 's');
         T = sscanf(T, '%f');
+        disp('done');
     end
 
 
@@ -139,14 +140,16 @@ while true
         sigma_i = 0; % current measurement noise
         sigma_v = 10^(-SNR / 20); % voltage measurement noise
 
-        delta = 100 * 10^(-3);
+        delta = 100 * 10^(-3);  % 100ms time total
 
-        [Vbatt, Ibatt, ~, Vo] = battSIM(I, T, Batt, sigma_i, sigma_v, delta);
+        [Vbatt, Ibatt, soc, Vo] = battSIM(I, T, Batt, sigma_i, sigma_v, delta);
 
         % output the results
         fprintf('%f ', Vbatt);
         fprintf('\n');
         fprintf('%f ', Ibatt);
+        fprintf('\n');
+        fprintf('%f ', soc);
         fprintf('\n');
         fprintf('%f ', Vo);
         fprintf('\n');
