@@ -44,3 +44,84 @@ def staircase(delta=5, Nsp=5, Ns=5, Nb=4, Imag=[-40, -80, -120, -160]):
     # I = I*10^-3;
     I = I * 10 ** (-3) # convert to mA
     return T, I
+
+
+def deepdischarge(delta=5, Ns=5, Nb=2, Imag=[0, -1000]):
+    """
+    delta = milliseconds time of each step
+    Ns = number of steps per block
+    Nb = number of blocks
+    Imag = list of current magnitudes for each step in mA, same number of elements as Nb
+
+    returns:
+    (time, current) as lists of floats in mS and mA
+    """
+    # delta = 5; % milliseconds
+    # Ns = 10; % #of samples for each pulse
+    # Nb = 2;
+    # Imag = [0 -1000]; % same as the #of blocks
+
+    # T = 0:delta:delta * Ns * Nb - 1;
+    T = np.arange(0, delta * Ns * Nb, delta)
+    # T = T * 10^ - 3;
+    T = T * 10 ** (-3) # convert to milliseconds
+    # T = T';
+    # l = 1;
+
+    I = np.zeros(Ns * Nb)
+
+    # for k = 1:Nb
+    for k in range(Nb):
+        I[k * Ns: (k+1) * Ns] = Imag[k] * np.ones(Ns)
+    #     I((k - 1) * Ns + 1:k * Ns) = Imag(l) * ones(Ns, 1);
+    #     l = l + 1;
+    #     if (l == Nb + 1)
+    #         l = 1;
+    #     end
+    # end
+    # I = I * 10^ - 3;
+    I = I * 10 ** (-3) # convert to mA
+    return T, I
+
+# for some reason this is identical to the deepdischarge function???
+def rectangular(delta=1000, Ns=500, Nb=2, Imag=[-1000, 0]):
+    """
+    delta = milliseconds time of each step
+    Ns = number of steps per wave
+    Nb = number of waves
+    Imag = list of current magnitudes for each step in mA, same number of elements as Nb
+
+    returns:
+    (time, current) as lists of floats in mS and mA
+    """
+
+    # %          delt = delta;
+    # %          pulsewidth = T;
+    # %          pulsetotal = D;
+    # delta = 1000; % milliseconds
+    # Ns = 500; % #of samples for each pulse
+    # Nb = 2;
+    # Imag = [-1000 0]; % same as the #of blocks
+
+
+    # T = 0:delta:delta * Ns * Nb - 1;
+    T = np.arange(0, delta * Ns * Nb, delta)
+    # T = T * 10^ - 3;
+    T = T * 10 ** (-3) # convert to milliseconds
+    # T = T';
+    # l = 1;
+    # for k = 1:Nb
+    I = np.zeros(Ns * Nb)
+    for k in range(Nb):
+        I[k * Ns: (k+1) * Ns] = Imag[k] * np.ones(Ns)
+    #     I((k - 1) * Ns + 1:k * Ns) = Imag(l) * ones(Ns, 1);
+    #     l = l + 1;
+    #     if (l == Nb + 1)
+    #         l = 1;
+    #     end
+    # end
+
+    # I = I * 10^ - 3;
+    I = I * 10 ** (-3) # convert to mA
+    # I = I';
+    return T, I

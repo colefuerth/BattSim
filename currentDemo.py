@@ -1,9 +1,11 @@
 # currentsim py demo
 
-from CurrentSIM import staircase
+from CurrentSIM import *
 import matplotlib.pyplot as plt
 
-T, I = staircase()
+# T, I = staircase()
+# T, I = deepdischarge()
+T, I = rectangular()
 
 # plot the the current (I) vs time (T)
 plt.plot(T, I)
