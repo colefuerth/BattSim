@@ -27,14 +27,12 @@ class BattSim:
         self.octave.stdin.write(f'{" ".join(map(str,battery))}\n')
         self.__resp()
 
-
     def setCurrentDraw(self, I: list, T: list) -> None:
         # I and T are both lists containing the same number of elements for simulation. These can be developed however you choose
         self.octave.stdin.write(f'i\n')
         self.octave.stdin.write(f"{' '.join(map(str, I))}\n")
         self.octave.stdin.write(f"{' '.join(map(str, T))}\n")
         self.__resp()
-                
 
     # for line in octave.stderr:
     #     print(line)
