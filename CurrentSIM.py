@@ -73,6 +73,9 @@ def rectangularnew(I1=-0.5, I2=0.5, delta=100*10**(-3), Tc=10, D=100):
     Tc = Pulse-Width in seconds
     D = Total time in seconds
     I1,I2 = current values for wave halves
+
+    returns:
+    (I, T) as lists of floats in mA and ms
     """
 
     Ns_pulse = int(Tc / delta) # Number of samples in one on-off pulse
@@ -93,7 +96,7 @@ def rectangularnew(I1=-0.5, I2=0.5, delta=100*10**(-3), Tc=10, D=100):
 
     I = I * 10 ** (-3) # convert to mA
 
-    return T, I
+    return I, T
 
 
 
