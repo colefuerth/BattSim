@@ -1,7 +1,7 @@
 %�2021 by the University of Windsor.
 function [V, I, soc, Vo] = battSIM(I, T, Batt, sigma_i, sigma_v, delta)
 
-    %     delta=0.1; % this should be constant in the input
+    % delta=0.1; % this should be constant in the input
 
     Kbatt = Batt.Kbatt;
     Cbatt = Batt.Cbatt;

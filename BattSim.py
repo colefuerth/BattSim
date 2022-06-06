@@ -1,51 +1,26 @@
 import subprocess as sp
 from utils import *
+from math import exp
+import numpy as np
 
 
 class BattSim:
 
-    def __init__(self):
-        self.octave = sp.Popen(["octave", "-W", "batterySimulator.m"],
-                               stdin=sp.PIPE,
-                               stdout=sp.PIPE,
-                               stderr=sp.PIPE,
-                               universal_newlines=True,
-                               bufsize=0)
-        self.Kbatt = [
-            -9.082, 103.087, -18.185, 2.062, -0.102, -76.604, 141.199, -1.117
-        ]
+    def __init__(self, Kbatt: list, Cbatt: float, R0: float, R1: float, C1: float, R2: float, C2: float, ModelID: int):
+        self.Kbatt = kBatt
+        self.Cbatt = Cbatt
+        self.R0 = R0
+        self.R1 = R1
+        self.C1 = C1
+        self.R2 = R2
+        self.C2 = C2
+        self.ModelID = ModelID
+        self.alpha1 = exp(- (delta / (R1 * C1)))
+        self.alpha2 = exp(- (delta / (R2 * C2)))
 
-    def __resp(self):
-        # confirm 'done' response from child
-        line = octave.stdout.readline().strip()
-        assert(line == 'done')
+        self.h = 0
 
-    # if octave.stdout.read() != 'coefficients':
-    #     raise Exception('coefficients request not received')
-    def setCoefficients(self, Kbatt):
-        self.octave.stdin.write(f'k\n')
-        self.octave.stdin.write(f'{" ".join(map(str,battery))}\n')
-        self.__resp()
-
-    def setCurrentDraw(self, I: list, T: list) -> None:
-        # I and T are both lists containing the same number of elements for simulation. These can be developed however you choose
-        self.octave.stdin.write(f'i\n')
-        self.octave.stdin.write(f"{' '.join(map(str, I))}\n")
-        self.octave.stdin.write(f"{' '.join(map(str, T))}\n")
-        self.__resp()
-
-    # for line in octave.stderr:
-    #     print(line)
-
-    # Fetch output
-    def __fetchResponse(self):
-        response = []
-        while True:
-            line = self.octave.stdout.readline().strip()
-            if line == 'done':
-                break
-            response.append(list(map(float, line.split())))
-        return response if len(response) > 1 else response[0]
+        self.soc = 0.5
 
     def simulate(self) -> list:
         """
