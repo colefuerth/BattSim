@@ -27,7 +27,7 @@ def staircase(delta=5, Nsp=5, Ns=5, Nb=4, Imag=[-40, -80, -120, -160]):
     for k in range(Nb * Nsp):
         I[k * Ns: (k+1) * Ns] = Imag[k % Nb] * np.ones(Ns)
 
-    I = I * 10 ** (-3) # convert to mA
+    # I = I * 10 ** (-3) # convert to mA
     return I, T
 
 # TODO: this function is meant to be used with a custom wave; it should be adapted better
@@ -49,7 +49,7 @@ def deepdischarge(delta=5, Ns=5, Nb=2, Imag=[0, -1000]):
 
     for k in range(Nb):
         I[k * Ns: (k+1) * Ns] = Imag[k] * np.ones(Ns)
-    I = I * 10 ** (-3) # convert to mA
+    # I = I * 10 ** (-3) # convert to mA
     return I, T
 
 # TODO: for some reason this is identical to the deepdischarge function???
@@ -71,7 +71,7 @@ def rectangular(delta=1000, Ns=500, Nb=2, Imag=[-1000, 0]):
     for k in range(Nb):
         I[k * Ns: (k+1) * Ns] = Imag[k] * np.ones(Ns)
 
-    I = I * 10 ** (-3) # convert to mA
+    # I = I * 10 ** (-3) # convert to mA
     return I, T
 
 # TODO: this is poorly ported from the old code (rectangular()), needs to be updated
@@ -132,4 +132,4 @@ def squareWave(amplitude, period, duration, sampleRate=10, offset=0):
             a.append(amplitude + offset)
         else:
             a.append(-amplitude + offset)
-    return (a, t)
+    return a, t
