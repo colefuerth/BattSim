@@ -7,7 +7,22 @@ import numpy as np
 
 class BattSim:
 
-    def __init__(self, Kbatt: list, Cbatt: float, R0: float, R1: float, C1: float, R2: float, C2: float, ModelID: int = 3):
+    def __init__(self, Kbatt: list, Cbatt: float, R0: float, R1: float, C1: float, R2: float, C2: float, ModelID:int, soc:float=0.5):
+    
+        # start by checking that available parameters are valid
+        if soc < 0 or soc > 1:
+            raise ValueError('SoC must be between 0 and 1')
+        if ModelID not in [1, 2, 3, 4]:
+            raise ValueError('ModelID must be an integer between 1 and 4')
+        for k, v in {'Cbatt':Cbatt, 'R0':R0, 'R1':R1, 'C1':C1, 'R2':R2, 'C2':C2}.items():
+            if (type(v) != float and type(v) != int) or v <= 0:
+                raise ValueError(f'{k} must be a positive number')
+        if len(Kbatt) != 8:
+            raise ValueError('Kbatt must be a list of 8 floats')
+        if any(type(x) != float and type(x) != int for x in Kbatt):
+            raise ValueError('Kbatt must be a list of 8 floats')
+        
+        # set the parameters
         self.Kbatt = Kbatt
         self.Cbatt = Cbatt
         self.R0 = R0
@@ -17,7 +32,7 @@ class BattSim:
         self.C2 = C2
         self.ModelID = ModelID
 
-        self.soc = 0.5
+        self.soc = soc
 
     def __scaling_fwd(self, x, x_min, x_max, E):
         return (1 - 2 * E) * (x - x_min) / (x_max - x_min) + E
@@ -25,7 +40,7 @@ class BattSim:
     # def __scaling_rev(self, x, x_min, x_max, E):
     #     return (z - E) * (x_max - x_min) / (1 - 2 * E) + x_min
 
-    def simulate(self, I, T, sigma_i=0, sigma_v=10**(-5/2), delta=None) -> list:
+    def simulate(self, I, T, sigma_i=0, sigma_v=10**(-50/20), delta=None) -> list:
         """
         Simulate the battery and return the voltage and current
         If delta is none, infers delta from T
@@ -120,14 +135,22 @@ if __name__ == '__main__':
 
     battSim = BattSim(Kbatt, Cbatt, R0, R1, C1, R2, C2, ModelID)
 
-    from CurrentSIM import rectangularnew
-    Vbatt, Ibatt, soc, Vo = battSim.simulate(*rectangularnew())
+    from CurrentSIM import *
+    I, T = staircase()
+
+    #  plot current/time and voltage/time
+    import matplotlib.pyplot as plt
+    plt.plot(T, I)
+    plt.show()
+
+    Vbatt, Ibatt, soc, Vo = battSim.simulate(I, T, delta=100*10**(-3))
 
     print(f'Vbatt: {Vbatt}')
     print(f'Ibatt: {Ibatt}')
     print(f'SoC: {soc}')
     print(f'Vo: {Vo}')
 
-    #  plot
+    #  plot current/time and voltage/time
     import matplotlib.pyplot as plt
-    plt.plot(Vbatt, Ibatt)
+    plt.plot(T, Vbatt)
+    plt.show()
