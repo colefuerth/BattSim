@@ -2,6 +2,12 @@
 import numpy as np
 from itertools import product
 
+# TODO: maybe add another deepdischarge that actually discharges the battery; use perlin noise to generate a discharge pattern
+
+# TODO: each of these has an `Nb` parameter, we should instead generate one 'block' and then repeat it Nb times. This will change these wave generation functions from O(n) to O(1)
+
+# TODO: add an offset parameter, default to 0, for stacking pulses in a stream
+
 def staircase(delta=5, Nsp=5, Ns=5, Nb=4, Imag=[-40, -80, -120, -160]):
     """
     delta = milliseconds between each step
@@ -22,8 +28,9 @@ def staircase(delta=5, Nsp=5, Ns=5, Nb=4, Imag=[-40, -80, -120, -160]):
         I[k * Ns: (k+1) * Ns] = Imag[k % Nb] * np.ones(Ns)
 
     I = I * 10 ** (-3) # convert to mA
-    return T, I
+    return I, T
 
+# TODO: this function is meant to be used with a custom wave; it should be adapted better
 
 def deepdischarge(delta=5, Ns=5, Nb=2, Imag=[0, -1000]):
     """
@@ -43,9 +50,10 @@ def deepdischarge(delta=5, Ns=5, Nb=2, Imag=[0, -1000]):
     for k in range(Nb):
         I[k * Ns: (k+1) * Ns] = Imag[k] * np.ones(Ns)
     I = I * 10 ** (-3) # convert to mA
-    return T, I
+    return I, T
 
-# for some reason this is identical to the deepdischarge function???
+# TODO: for some reason this is identical to the deepdischarge function???
+
 def rectangular(delta=1000, Ns=500, Nb=2, Imag=[-1000, 0]):
     """
     delta = milliseconds time of each step
@@ -64,36 +72,38 @@ def rectangular(delta=1000, Ns=500, Nb=2, Imag=[-1000, 0]):
         I[k * Ns: (k+1) * Ns] = Imag[k] * np.ones(Ns)
 
     I = I * 10 ** (-3) # convert to mA
-    return T, I
+    return I, T
 
+# TODO: this is poorly ported from the old code (rectangular()), needs to be updated
+# TODO: maybe add a duty cycle?
 
 def rectangularnew(I1=-0.5, I2=0.5, delta=100*10**(-3), Tc=10, D=100):
     """
     delta =  Sampling delta time in seconds
     Tc = Pulse-Width in seconds
     D = Total time in seconds
-    I1,I2 = current values for wave halves
+    I1,I2 = current values for wave halves in Amps
+
+    returns:
+    (I, T) as lists of floats in Amps and Seconds
     """
 
-    Ns_pulse = int(Tc / delta) # Number of samples in one on-off pulse
-    Np = int(D / Tc) # Number of on-off pulses
-    Nsp2 = int(Ns_pulse / 2) # Number of samples in each half of apulse
-    Nb = 2 # Number of blocks = on + off pulse
-    Nt = int(D / delta) # Total number of samples
-    Imag = [I1, I2] # Current vector
-    T = np.arange(0, D, delta) # Time vector
-    I = Imag[0] * np.ones(Nt) # Current vector
+    Np = int(D / Tc)  # Number of on-off pulses
+    Nsp2 = int(Tc / delta / 2)  # Number of samples in each half of apulse
+    Nb = 2  # Number of blocks = on + off pulse
+    Nt = int(D / delta)  # Total number of samples
+    Imag = [I1, I2]  # Current vector
+    T = np.arange(offset, offset + D, delta)  # Time vector
+    I = Imag[0] * np.ones(Nt)  # Current vector
     for k in range(Nb * Np):
-        I[k*Nsp2 : (k+1)*Nsp2] = Imag[k % Nb] * np.ones(Nsp2)
+        I[k*Nsp2: (k+1)*Nsp2] = Imag[k % Nb] * np.ones(Nsp2)
 
     # if (Np * Ns_pulse != Nt):
     #     print("Warning: Np * Ns_pulse ~= Nt")
     #     Q = Nt - Np * Ns_pulse
     #     I[k * Nsp2:k * Nsp2 + Q] = I[:Q]
 
-    I = I * 10 ** (-3) # convert to mA
-
-    return T, I
+    return I, T
 
 
 
