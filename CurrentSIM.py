@@ -21,7 +21,7 @@ def staircase(delta=5, Nsp=5, Ns=5, Nb=4, Imag=[-40, -80, -120, -160]):
     """
 
     T = np.arange(0, Nsp * Ns * delta * Nb, delta)
-    T = T * 10 ** (-3) # convert to milliseconds
+    T = T * 10 ** (-3) # convert milliseconds to seconds
     I = np.zeros(Nsp * Ns * Nb)
 
     for k in range(Nb * Nsp):
@@ -43,7 +43,7 @@ def deepdischarge(delta=5, Ns=5, Nb=2, Imag=[0, -1000]):
     (time, current) as lists of floats in mS and mA
     """
     T = np.arange(0, delta * Ns * Nb, delta)
-    T = T * 10 ** (-3) # convert to milliseconds
+    T = T * 10 ** (-3) # convert milliseconds to seconds
 
     I = np.zeros(Ns * Nb)
 
@@ -66,7 +66,7 @@ def rectangular(delta=1000, Ns=500, Nb=2, Imag=[-1000, 0]):
     """
 
     T = np.arange(0, delta * Ns * Nb, delta)
-    T = T * 10 ** (-3) # convert to milliseconds
+    T = T * 10 ** (-3) # convert milliseconds to seconds
     I = np.zeros(Ns * Nb)
     for k in range(Nb):
         I[k * Ns: (k+1) * Ns] = Imag[k] * np.ones(Ns)
