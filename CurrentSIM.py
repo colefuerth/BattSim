@@ -8,7 +8,7 @@ from itertools import product
 
 # TODO: add an offset parameter, default to 0, for stacking pulses in a stream
 
-def staircase(delta=5, Nsp=5, Ns=5, Nb=4, Imag=[-40, -80, -120, -160]):
+def staircase(delta=5, Nsp=5, Ns=5, Nb=4, Imag=[-40, -80, -120, -160], offset=0):
     """
     delta = milliseconds between each step
     Nsp = number of staircase pulses/groups (repeat modifier)
@@ -17,10 +17,10 @@ def staircase(delta=5, Nsp=5, Ns=5, Nb=4, Imag=[-40, -80, -120, -160]):
     Imag = list of current magnitudes for each step in mA, same number of elements as Nb
 
     returns:
-    (time, current) as lists of floats in mS and mA
+    (current, time) as lists of floats in mS and mA
     """
-
-    T = np.arange(0, Nsp * Ns * delta * Nb, delta)
+    offset = offset * 10 ** (3) # convert offset to milliseconds
+    T = np.arange(offset, offset + Nsp * Ns * delta * Nb, delta)
     T = T * 10 ** (-3) # convert milliseconds to seconds
     I = np.zeros(Nsp * Ns * Nb)
 
@@ -32,17 +32,19 @@ def staircase(delta=5, Nsp=5, Ns=5, Nb=4, Imag=[-40, -80, -120, -160]):
 
 # TODO: this function is meant to be used with a custom wave; it should be adapted better
 
-def deepdischarge(delta=5, Ns=5, Nb=2, Imag=[0, -1000]):
+def deepdischarge(delta=5, Ns=5, Nb=2, Imag=[0, -1000], offset=0):
     """
     delta = milliseconds time of each step
     Ns = number of steps per block
     Nb = number of blocks
     Imag = list of current magnitudes for each step in mA, same number of elements as Nb
+    offset = time offset in seconds
 
     returns:
-    (time, current) as lists of floats in mS and mA
+    (current, time) as lists of floats in mS and mA
     """
-    T = np.arange(0, delta * Ns * Nb, delta)
+    offset = offset * 10 ** (3) # convert offset to milliseconds
+    T = np.arange(offset, offset + delta * Ns * Nb, delta)
     T = T * 10 ** (-3) # convert milliseconds to seconds
 
     I = np.zeros(Ns * Nb)
@@ -54,18 +56,19 @@ def deepdischarge(delta=5, Ns=5, Nb=2, Imag=[0, -1000]):
 
 # TODO: for some reason this is identical to the deepdischarge function???
 
-def rectangular(delta=1000, Ns=500, Nb=2, Imag=[-1000, 0]):
+def rectangular(delta=1000, Ns=500, Nb=2, Imag=[-1000, 0], offset=0):
     """
     delta = milliseconds time of each step
     Ns = number of steps per wave
     Nb = number of waves
     Imag = list of current magnitudes for each step in mA, same number of elements as Nb
+    offset = time offset in seconds
 
     returns:
-    (time, current) as lists of floats in mS and mA
+    (current, time) as lists of floats in mS and mA
     """
-
-    T = np.arange(0, delta * Ns * Nb, delta)
+    offset = offset * 10 ** (3) # convert offset to milliseconds
+    T = np.arange(offset, delta * Ns * Nb + offset, delta)
     T = T * 10 ** (-3) # convert milliseconds to seconds
     I = np.zeros(Ns * Nb)
     for k in range(Nb):
@@ -77,12 +80,13 @@ def rectangular(delta=1000, Ns=500, Nb=2, Imag=[-1000, 0]):
 # TODO: this is poorly ported from the old code (rectangular()), needs to be updated
 # TODO: maybe add a duty cycle?
 
-def rectangularnew(I1=-0.5, I2=0.5, delta=100*10**(-3), Tc=10, D=100):
+def rectangularnew(I1=-0.5, I2=0.5, delta=100*10**(-3), Tc=10, D=100, offset=0):
     """
     delta =  Sampling delta time in seconds
     Tc = Pulse-Width in seconds
     D = Total time in seconds
     I1,I2 = current values for wave halves in Amps
+    offset = time offset in seconds
 
     returns:
     (I, T) as lists of floats in Amps and Seconds
@@ -122,7 +126,7 @@ def squareWave(amplitude, period, duration, sampleRate=10, offset=0):
     offset = offset of the wave in volts
 
     returns:
-    (amps, time) as lists of floats
+    (current, time) as lists of floats
     """
     a = []
     t = [round(i, round(log10(sampleRate)))
@@ -133,3 +137,21 @@ def squareWave(amplitude, period, duration, sampleRate=10, offset=0):
         else:
             a.append(-amplitude + offset)
     return a, t
+
+
+def demo():
+    import matplotlib.pyplot as plt
+
+    # T, I = staircase()
+    # T, I = deepdischarge()
+    # T, I = rectangular()
+    I, T = rectangularnew()
+
+    # plot the the current (I) vs time (T)
+    plt.plot(T, I)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Current (A)')
+    plt.show()
+
+if __name__ == "__main__":
+    demo()
