@@ -79,15 +79,15 @@ class BattSim:
         Vo = np.zeros(l)  # create Vo (OCV voltage vector)
         zsoc = self.__scaling_fwd(soc, 0, 1, 0.175)  # ???
 
-        for k in range(len(zsoc)):
+        for k, zk in enumerate(zsoc):
             Vo[k] = Kbatt[0]\
-                + self.Kbatt[1] / zsoc[k]\
-                + self.Kbatt[2] / zsoc[k] ** 2\
-                + self.Kbatt[3] / zsoc[k] ** 3\
-                + self.Kbatt[4] / zsoc[k] ** 4\
-                + self.Kbatt[5] * zsoc[k]\
-                + self.Kbatt[6] * log(zsoc[k])\
-                + self.Kbatt[7] * log(1 - zsoc[k])
+                + self.Kbatt[1] / zk\
+                + self.Kbatt[2] / zk ** 2\
+                + self.Kbatt[3] / zk ** 3\
+                + self.Kbatt[4] / zk ** 4\
+                + self.Kbatt[5] * zk\
+                + self.Kbatt[6] * log(zk)\
+                + self.Kbatt[7] * log(1 - zk)
 
         # Determine current through R1 and R2
 
@@ -138,19 +138,20 @@ if __name__ == '__main__':
     from CurrentSIM import *
     I, T = staircase()
 
-    #  plot current/time and voltage/time
-    import matplotlib.pyplot as plt
-    plt.plot(T, I)
-    plt.show()
-
     Vbatt, Ibatt, soc, Vo = battSim.simulate(I, T, delta=100*10**(-3))
 
-    print(f'Vbatt: {Vbatt}')
-    print(f'Ibatt: {Ibatt}')
-    print(f'SoC: {soc}')
-    print(f'Vo: {Vo}')
+    # print(f'Vbatt: {Vbatt}')
+    # print(f'Ibatt: {Ibatt}')
+    # print(f'SoC: {soc}')
+    # print(f'Vo: {Vo}')
 
-    #  plot current/time and voltage/time
+    #  plot current/time and voltage/time, stacked
     import matplotlib.pyplot as plt
-    plt.plot(T, Vbatt)
+    fig, axs = plt.subplots(2, 1, sharex=True)
+    plt.grid(visible=True, which='both')
+    fig.suptitle('Battery Simulation')
+    axs[0].plot(T, Ibatt, label='Ibatt')
+    axs[1].plot(T, Vbatt, label='Vbatt')
+    axs[0].legend()
+    axs[1].legend()
     plt.show()
