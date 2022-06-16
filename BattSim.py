@@ -6,7 +6,6 @@ import numpy as np
 
 
 class BattSim:
-
     def __init__(self, Kbatt: list, Cbatt: float, R0: float, R1: float, C1: float, R2: float, C2: float, ModelID:int, soc:float=0.5):
     
         # start by checking that available parameters are valid
@@ -80,7 +79,7 @@ class BattSim:
         zsoc = self.__scaling_fwd(soc, 0, 1, 0.175)  # ???
 
         for k, zk in enumerate(zsoc):
-            Vo[k] = Kbatt[0]\
+            Vo[k] = self.Kbatt[0]\
                 + self.Kbatt[1] / zk\
                 + self.Kbatt[2] / zk ** 2\
                 + self.Kbatt[3] / zk ** 3\
