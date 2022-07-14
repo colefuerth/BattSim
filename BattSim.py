@@ -80,7 +80,7 @@ class BattSim:
 
         # determination of OCV (generate Vo
         Vo = np.zeros(l)  # create Vo (OCV voltage vector)
-        zsoc = self.__scaling_fwd(soc, 0, 1, 0.175)  # truncate the beginning and end 0.175 of the SOC curve
+        zsoc = self.__scaling_fwd(soc, 0, 1, 0.175)  # squeeze the beginning and end 0.175 of the SOC curve
 
         for k, zk in enumerate(zsoc):
             Vo[k] = self.Kbatt[0]\
