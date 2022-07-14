@@ -56,7 +56,6 @@ class BattSim:
         Vo: OCV voltage vector
         """
         delta = T[1] - T[0]
-        print(delta)
 
         alpha1 = exp(- (delta / (self.R1 * self.C1)))
         alpha2 = exp(- (delta / (self.R2 * self.C2)))
