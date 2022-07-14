@@ -15,11 +15,11 @@ class BattSim:
             raise ValueError('ModelID must be an integer between 1 and 4')
         for k, v in {'Cbatt':Cbatt, 'R0':R0, 'R1':R1, 'C1':C1, 'R2':R2, 'C2':C2}.items():
             if (type(v) != float and type(v) != int) or v <= 0:
-                raise ValueError(f'{k} must be a positive number')
+                raise ValueError(f'{k} must be a positive non-zero number')
         if len(Kbatt) != 8:
-            raise ValueError('Kbatt must be a list of 8 floats')
+            raise ValueError('Kbatt must be a list of length 8')
         if any(type(x) != float and type(x) != int for x in Kbatt):
-            raise ValueError('Kbatt must be a list of 8 floats')
+            raise ValueError('Kbatt must be a list of all numbers')
         
         # set the parameters
         self.Kbatt = Kbatt
@@ -58,8 +58,8 @@ class BattSim:
         delta = T[1] - T[0]
         print(delta)
 
-        alpha1 = exp(- (delta / (R1 * C1)))
-        alpha2 = exp(- (delta / (R2 * C2)))
+        alpha1 = exp(- (delta / (self.R1 * self.C1)))
+        alpha2 = exp(- (delta / (self.R2 * self.C2)))
 
         h = 0
 
@@ -109,13 +109,13 @@ class BattSim:
         V = np.zeros(l)
 
         if self.ModelID == 1:
-            V = I * R0
+            V = I * self.R0
         elif self.ModelID == 2:
-            V = I * R0 + Vo + h
+            V = I * self.R0 + self.Vo + h
         elif self.ModelID == 3:
-            V = I * R0 + I1 * R1 + Vo + h
+            V = I * self.R0 + self.I1 * self.R1 + Vo + h
         elif self.ModelID == 4:
-            V = I * R0 + I1 * R1 + I2 * R2 + Vo + h
+            V = I * self.R0 + self.I1 * self.R1 + self.I2 * self.R2 + Vo + h
         else:
             print('Invalid Model ID')
             return
