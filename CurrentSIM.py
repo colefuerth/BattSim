@@ -17,7 +17,7 @@ def staircase(delta=5, Nsp=5, Ns=5, Nb=4, Imag=[-40, -80, -120, -160], offset=0)
     Imag = list of current magnitudes for each step in mA, same number of elements as Nb
 
     returns:
-    (current, time) as lists of floats in mS and mA
+    (current, time) as lists of floats in amps and seconds
     """
     offset = offset * 10 ** (3) # convert offset to milliseconds
     T = np.arange(offset, offset + Nsp * Ns * delta * Nb, delta)
@@ -41,7 +41,7 @@ def deepdischarge(delta=5, Ns=5, Nb=2, Imag=[0, -1000], offset=0):
     offset = time offset in seconds
 
     returns:
-    (current, time) as lists of floats in mS and mA
+    (current, time) as lists of floats in amps and seconds
     """
     offset = offset * 10 ** (3) # convert offset to milliseconds
     T = np.arange(offset, offset + delta * Ns * Nb, delta)
@@ -65,7 +65,7 @@ def rectangular(delta=1000, Ns=500, Nb=2, Imag=[-1000, 0], offset=0):
     offset = time offset in seconds
 
     returns:
-    (current, time) as lists of floats in mS and mA
+    (current, time) as lists of floats in amps and seconds
     """
     offset = offset * 10 ** (3) # convert offset to milliseconds
     T = np.arange(offset, delta * Ns * Nb + offset, delta)

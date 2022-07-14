@@ -39,10 +39,15 @@ class BattSim:
     # def __scaling_rev(self, x, x_min, x_max, E):
     #     return (z - E) * (x_max - x_min) / (1 - 2 * E) + x_min
 
-    def simulate(self, I, T, sigma_i=0, sigma_v=10**(-50/20), delta=None) -> list:
+    def simulate(self, I, T, sigma_i=0, sigma_v=10**(-50/20)) -> list:
         """
         Simulate the battery and return the voltage and current
-        If delta is none, infers delta from T
+        
+        I: list of current magnitudes in amps
+        T: list of timestamps in seconds
+        sigma_i: standard deviation of the current in amps
+        sigma_v: standard deviation of the voltage in volts
+
         returns:
         [Vbatt, Ibatt, soc, Vo] as lists of floats
         Vbatt: final output voltage of battery (with sag)
@@ -50,8 +55,8 @@ class BattSim:
         soc: final state of charge of battery
         Vo: OCV voltage vector
         """
-        if delta is None:
-            delta = T[1] - T[0]
+        delta = T[1] - T[0]
+        print(delta)
 
         alpha1 = exp(- (delta / (R1 * C1)))
         alpha2 = exp(- (delta / (R2 * C2)))
@@ -76,7 +81,7 @@ class BattSim:
 
         # determination of OCV (generate Vo
         Vo = np.zeros(l)  # create Vo (OCV voltage vector)
-        zsoc = self.__scaling_fwd(soc, 0, 1, 0.175)  # ???
+        zsoc = self.__scaling_fwd(soc, 0, 1, 0.175)  # truncate the beginning and end 0.175 of the SOC curve
 
         for k, zk in enumerate(zsoc):
             Vo[k] = self.Kbatt[0]\
@@ -137,7 +142,7 @@ if __name__ == '__main__':
     from CurrentSIM import *
     I, T = staircase()
 
-    Vbatt, Ibatt, soc, Vo = battSim.simulate(I, T, delta=100*10**(-3))
+    Vbatt, Ibatt, soc, Vo = battSim.simulate(I, T)
 
     # print(f'Vbatt: {Vbatt}')
     # print(f'Ibatt: {Ibatt}')
