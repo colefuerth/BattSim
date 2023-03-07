@@ -6,21 +6,24 @@ import numpy as np
 
 
 class BattSim:
-    def __init__(self, Kbatt: list, Cbatt: float, R0: float, R1: float, C1: float, R2: float, C2: float, ModelID:int, soc:float=0.5):
-    
+    def __init__(self, Kbatt: list, Cbatt: float, R0: float, R1: float, C1: float, R2: float, C2: float, ModelID: int, soc: float = 0.5):
+
         # start by checking that available parameters are valid
         if soc < 0 or soc > 1:
             raise ValueError('SoC must be between 0 and 1')
         if ModelID not in [1, 2, 3, 4]:
             raise ValueError('ModelID must be an integer between 1 and 4')
-        for k, v in {'Cbatt':Cbatt, 'R0':R0, 'R1':R1, 'C1':C1, 'R2':R2, 'C2':C2}.items():
+        for k, v in {'Cbatt': Cbatt, 'R0': R0, 'R1': R1, 'C1': C1, 'R2': R2, 'C2': C2}.items():
+            v = float(v)
             if (type(v) != float and type(v) != int) or v <= 0:
-                raise ValueError(f'{k} must be a positive non-zero number')
+                raise ValueError(
+                    f'{k} must be a positive non-zero number, it was {v} of type {type(v)}!')
         if len(Kbatt) != 8:
             raise ValueError('Kbatt must be a list of length 8')
-        if any(type(x) != float and type(x) != int for x in Kbatt):
+        # check that the type of x is array-like
+        if any(type(x) not in [float, int, np.float32, np.float64] for x in Kbatt):
             raise ValueError('Kbatt must be a list of all numbers')
-        
+
         # set the parameters
         self.Kbatt = Kbatt
         self.Cbatt = Cbatt
@@ -42,7 +45,7 @@ class BattSim:
     def simulate(self, I, T, sigma_i=0, sigma_v=10**(-50/20)) -> list:
         """
         Simulate the battery and return the voltage and current
-        
+
         I: list of current magnitudes in amps
         T: list of timestamps in seconds
         sigma_i: standard deviation of the current in amps
@@ -80,7 +83,8 @@ class BattSim:
 
         # determination of OCV (generate Vo
         Vo = np.zeros(l)  # create Vo (OCV voltage vector)
-        zsoc = self.__scaling_fwd(soc, 0, 1, 0.175)  # squeeze the beginning and end 0.175 of the SOC curve
+        # squeeze the beginning and end 0.175 of the SOC curve
+        zsoc = self.__scaling_fwd(soc, 0, 1, 0.175)
 
         for k, zk in enumerate(zsoc):
             Vo[k] = self.Kbatt[0]\
@@ -110,7 +114,7 @@ class BattSim:
         if self.ModelID == 1:
             V = I * self.R0
         elif self.ModelID == 2:
-            V = I * self.R0 + self.Vo + h
+            V = I * self.R0 + Vo + h
         elif self.ModelID == 3:
             V = I * self.R0 + self.I1 * self.R1 + Vo + h
         elif self.ModelID == 4:
